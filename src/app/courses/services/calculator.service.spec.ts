@@ -10,7 +10,6 @@ describe('CalculatorService', () => {
   beforeEach(() => {
     // Mocks
     loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['log']);
-
     /* TestBed: This allows us to configure the environment of our test, for example, the modules to work with Dependency Injection */
     TestBed.configureTestingModule({
       providers: [
