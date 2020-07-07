@@ -1,31 +1,38 @@
-import {CalculatorService} from "./calculator.service";
-import {LoggerService} from "./logger.service";
+import {CalculatorService} from './calculator.service';
+import {LoggerService} from './logger.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('CalculatorService', () => {
-  // Defining the beforeEach variables "globally" so they can be accessed inside the spec
-  let loggerService: LoggerService;
-  let calculatorService: CalculatorService;
+  // Global Variables
+  let calculatorService: CalculatorService,
+      loggerServiceSpy: any;
 
-  // This block will be executed before each specifications (it())
   beforeEach(() => {
-    console.log('Calling beforeEach');
-    loggerService = jasmine.createSpyObj('LoggerService', ['log']);
-    calculatorService = new CalculatorService(loggerService);
-  })
+    // Mocks
+    loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['log']);
+
+    /* TestBed: This allows us to configure the environment of our test, for example, the modules to work with Dependency Injection */
+    TestBed.configureTestingModule({
+      providers: [
+        CalculatorService,
+        { provide: LoggerService, useValue: loggerServiceSpy }
+      ]
+    });
+
+    // Getting the CalculatorService by Dependency Injection, note that the LoggerService was injected by Angular
+    calculatorService = TestBed.inject(CalculatorService);
+  });
 
   it('should add 2 numbers', function () {
-    console.log('Add Test');
     const result = calculatorService.add(4, 2);
 
     expect(result).toBe(6);
-    expect(loggerService.log).toHaveBeenCalledTimes(1);
+    expect(loggerServiceSpy.log).toHaveBeenCalledTimes(1);
   });
 
   it('should subtract 2 numbers', function () {
-    // Jasmine will create a completely fake version of this Class
-    console.log('Subtract Test');
     const result = calculatorService.subtract(4, 2);
 
     expect(result).toBe(2, 'Unexpected Subtraction Result');
   });
-})
+});
