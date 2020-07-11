@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { CoursesService } from './courses.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { COURSES } from '../../../../server/db-data';
+import {Course} from "../model/course";
 
 
 // Global
@@ -48,9 +49,25 @@ describe('CoursesService', () => {
 
     expect(req.request.method).toEqual('GET');
   });
+
+  it('should save the course data from saveCourse()',  () => {
+    const courseId = 12;
+    const changes: Partial<Course> = { titles: { description: 'Ng Angular Course' } };
+
+    courseService.saveCourse(courseId, changes).subscribe( course => {
+      expect(course.id).toEqual(courseId);
+    });
+
+    const req = httpTestingController.expectOne(`/api/courses/${courseId}`);
+    req.flush({
+      ...COURSES[courseId],
+      ...changes
+    });
+
+    expect(req.request.method).toEqual('PUT');
+    expect(req.request.body.titles.description).toEqual(changes.titles.description);
+  });
 });
-
-
 /**
  * HttpTestingController allows to fake HttpRequests data
  */
