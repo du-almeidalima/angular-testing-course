@@ -3,6 +3,7 @@ import { CoursesService } from './courses.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { COURSES } from '../../../../server/db-data';
 import {Course} from "../model/course";
+import {HttpErrorResponse} from "@angular/common/http";
 
 
 // Global
@@ -26,6 +27,10 @@ describe('CoursesService', () => {
     courseService = TestBed.inject(CoursesService);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => {
+    httpTestingController.verify();
+  })
 
   it('should create', () => {
     expect(courseService).toBeTruthy();
@@ -67,7 +72,25 @@ describe('CoursesService', () => {
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body.titles.description).toEqual(changes.titles.description);
   });
+
+  it('should give an error if save course fails', () => {
+    const courseId = 12;
+    const changes: Partial<Course> = { titles: { description: 'Fail Course' } };
+
+    courseService.saveCourse(courseId, changes).subscribe(
+      () => fail('should never execute on HTTP Failure'),
+      (error: HttpErrorResponse) => {
+        expect(error.status).toBe(500);
+      }
+    )
+
+    const req = httpTestingController.expectOne(`/api/courses/${courseId}`);
+    req.flush('Save course failed', { status: 500, statusText: 'Internal Server Error' } );
+
+    expect(req.request.method).toBe('PUT');
+  });
 });
+
 /**
  * HttpTestingController allows to fake HttpRequests data
  */
