@@ -1,14 +1,14 @@
-import { TestBed } from '@angular/core/testing';
-import { CoursesService } from './courses.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { COURSES } from '../../../../server/db-data';
+import {TestBed} from '@angular/core/testing';
+import {CoursesService} from './courses.service';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {COURSES, findLessonsForCourse} from '../../../../server/db-data';
 import {Course} from "../model/course";
 import {HttpErrorResponse} from "@angular/common/http";
 
 
 // Global
 let courseService: CoursesService,
-    httpTestingController: HttpTestingController;
+  httpTestingController: HttpTestingController;
 
 describe('CoursesService', () => {
 
@@ -85,9 +85,36 @@ describe('CoursesService', () => {
     )
 
     const req = httpTestingController.expectOne(`/api/courses/${courseId}`);
-    req.flush('Save course failed', { status: 500, statusText: 'Internal Server Error' } );
+    req.flush('Save course failed', {status: 500, statusText: 'Internal Server Error'});
 
     expect(req.request.method).toBe('PUT');
+  });
+
+  it('should find a list of lessons from findLessons()', () => {
+    const courseId = 12;
+    const pageSize = 3;
+    const sortOrder = 'asc'
+
+    courseService.findLessons(courseId, '', sortOrder, 0, pageSize)
+      .subscribe(lessons => {
+
+        expect(lessons).toBeTruthy();
+        expect(lessons.length).toBeLessThanOrEqual(pageSize);
+      });
+
+    const req = httpTestingController.expectOne(req => req.url == '/api/lessons');
+
+    // Simulating a response
+    req.flush({
+      payload: findLessonsForCourse(courseId).slice(0, pageSize)
+    });
+
+    expect(req.request.method === 'GET');
+
+    expect(req.request.params.get('courseId')).toEqual(courseId.toString());
+    expect(req.request.params.get('pageSize')).toEqual(pageSize.toString());
+    expect(req.request.params.get('filter')).toEqual('');
+    expect(req.request.params.get('sortOrder')).toEqual(sortOrder);
   });
 });
 
