@@ -45,8 +45,18 @@ describe('CoursesCardListComponent', () => {
 
   it("should display the first course", () => {
 
-      pending();
+    component.courses = setupCourses();
+    fixture.detectChanges();
 
+    const firstCourse = component.courses[0];
+    const firstCard = el.query(By.css('mat-card:first-child'));
+    const firstCardTitle = firstCard.query(By.css('mat-card-title'));
+    const firstCardImg = firstCard.query(By.css('img'));
+
+    expect(component.courses).toBeTruthy('failed to get courses');
+    expect(firstCard).toBeTruthy('failed to get card from the list');
+    expect(firstCardTitle.nativeElement.textContent).toEqual(firstCourse.titles.description, `diverging title description`);
+    expect(firstCardImg.attributes.src).toEqual(firstCourse.iconUrl, `image doesn't match course url`);
   });
 
 
