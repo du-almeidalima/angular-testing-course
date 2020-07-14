@@ -1,16 +1,16 @@
 import {CoursesCardListComponent} from './courses-card-list.component';
-import {async, ComponentFixture, TestBed} from "@angular/core/testing";
-import {CoursesModule} from "../courses.module";
-import {setupCourses} from "../common/setup-test-data";
-import {By} from "@angular/platform-browser";
-import {DebugElement} from "@angular/core";
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {CoursesModule} from '../courses.module';
+import {setupCourses} from '../common/setup-test-data';
+import {By} from '@angular/platform-browser';
+import {DebugElement} from '@angular/core';
 
 
 describe('CoursesCardListComponent', () => {
 
   let component: CoursesCardListComponent;
   let fixture: ComponentFixture<CoursesCardListComponent>;
-  let el: DebugElement
+  let el: DebugElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,13 +25,13 @@ describe('CoursesCardListComponent', () => {
       });
   }));
 
-  it("should create the component", () => {
+  it('should create the component', () => {
     console.log(component);
     expect(component).toBeTruthy();
   });
 
 
-  it("should display the course list", () => {
+  it('should display the course list', () => {
 
     component.courses = setupCourses();
     fixture.detectChanges();
@@ -43,7 +43,7 @@ describe('CoursesCardListComponent', () => {
   });
 
 
-  it("should display the first course", () => {
+  it('should display the first course', () => {
 
     component.courses = setupCourses();
     fixture.detectChanges();

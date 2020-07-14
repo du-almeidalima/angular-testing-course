@@ -2,8 +2,8 @@ import {TestBed} from '@angular/core/testing';
 import {CoursesService} from './courses.service';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {COURSES, findLessonsForCourse} from '../../../../server/db-data';
-import {Course} from "../model/course";
-import {HttpErrorResponse} from "@angular/common/http";
+import {Course} from '../model/course';
+import {HttpErrorResponse} from '@angular/common/http';
 
 
 // Global
@@ -30,7 +30,7 @@ describe('CoursesService', () => {
 
   afterEach(() => {
     httpTestingController.verify();
-  })
+  });
 
   it('should create', () => {
     expect(courseService).toBeTruthy();
@@ -82,7 +82,7 @@ describe('CoursesService', () => {
       (error: HttpErrorResponse) => {
         expect(error.status).toBe(500);
       }
-    )
+    );
 
     const req = httpTestingController.expectOne(`/api/courses/${courseId}`);
     req.flush('Save course failed', {status: 500, statusText: 'Internal Server Error'});
@@ -93,7 +93,7 @@ describe('CoursesService', () => {
   it('should find a list of lessons from findLessons()', () => {
     const courseId = 12;
     const pageSize = 3;
-    const sortOrder = 'asc'
+    const sortOrder = 'asc';
 
     courseService.findLessons(courseId, '', sortOrder, 0, pageSize)
       .subscribe(lessons => {
