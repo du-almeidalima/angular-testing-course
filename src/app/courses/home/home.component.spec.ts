@@ -1,13 +1,13 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {CoursesModule} from '../courses.module';
+import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {of} from 'rxjs';
 
+import {CoursesModule} from '../courses.module';
 import {HomeComponent} from './home.component';
 import {CoursesService} from '../services/courses.service';
 import {setupCourses} from '../common/setup-test-data';
-import {By} from '@angular/platform-browser';
-import {of} from 'rxjs';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {click} from '../common/test-utils';
 
 describe('HomeComponent', () => {
@@ -78,14 +78,12 @@ describe('HomeComponent', () => {
   });
 
 
-  it('should display advanced courses when tab clicked', () => {
+  // The DoneFn tells Jasmine this is a async test and it will only complete when this function is called
+  it('should display advanced courses when tab clicked', (done: DoneFn) => {
     coursesService.findAllCourses.and.returnValue(of(setupCourses()));
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css('.mat-tab-label'));
-    // Beginners Tab (First Tab)
-    expect(tabs[0].nativeElement.classList).toContain('mat-tab-label-active');
-
     /* Native Click  API (DOM) */
     // tabs[1].nativeElement.click();
 
@@ -93,8 +91,13 @@ describe('HomeComponent', () => {
     tabs[1].triggerEventHandler('click', { button: 0 });
     fixture.detectChanges();
 
-    // Advanced Tab (Second Tab)
-    expect(tabs[1].nativeElement.classList).toContain('mat-tab-label-active');
+    setTimeout(() => {
+      const cardTitles = el.queryAll(By.css('.mat-tab-body-active .mat-card-title'));
+
+      // Advanced Tab (Second Tab)
+      expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+      done();
+    }, 1000);
   });
 
 });
