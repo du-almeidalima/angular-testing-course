@@ -1,18 +1,14 @@
-import {async, ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {CoursesModule} from '../courses.module';
 import {DebugElement} from '@angular/core';
 
 import {HomeComponent} from './home.component';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {CoursesService} from '../services/courses.service';
-import {HttpClient} from '@angular/common/http';
-import {COURSES} from '../../../../server/db-data';
 import {setupCourses} from '../common/setup-test-data';
 import {By} from '@angular/platform-browser';
 import {of} from 'rxjs';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {click} from '../common/test-utils';
-import {Test} from 'tslint';
 
 describe('HomeComponent', () => {
 
@@ -73,14 +69,32 @@ describe('HomeComponent', () => {
 
 
   it('should display both tabs', () => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
 
-    pending();
+    const tabs = el.queryAll(By.css('.mat-tab-label'));
+
+    expect(tabs.length).toEqual(2, 'Should have both tabs available');
   });
 
 
   it('should display advanced courses when tab clicked', () => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
 
-    pending();
+    const tabs = el.queryAll(By.css('.mat-tab-label'));
+    // Beginners Tab (First Tab)
+    expect(tabs[0].nativeElement.classList).toContain('mat-tab-label-active');
+
+    /* Native Click  API (DOM) */
+    // tabs[1].nativeElement.click();
+
+    /* Using DebugElement API */
+    tabs[1].triggerEventHandler('click', { button: 0 });
+    fixture.detectChanges();
+
+    // Advanced Tab (Second Tab)
+    expect(tabs[1].nativeElement.classList).toContain('mat-tab-label-active');
   });
 
 });
