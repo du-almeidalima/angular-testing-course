@@ -57,4 +57,31 @@ describe('Async Testing Examples', () => {
     flushMicrotasks();
     expect(test).toBeTruthy();
   }));
+
+  /* Simulating the passage of time asynchronously for lots of async code */
+  it('Asynchronous test example with Promise + setTimout', fakeAsync(() => {
+    let counter = 0;
+
+    Promise.resolve()
+      .then(() => {
+        counter += 10;
+
+        setTimeout(() => {
+          counter += 1;
+        }, 1000);
+      });
+
+    // Main Thread
+    expect(counter).toBe(0);
+
+    // Microtasks Queue
+    flushMicrotasks();
+    expect(counter).toBe(10);
+
+    // Macrotasks Queue
+    tick(500);
+    expect(counter).toBe(10);
+    tick(500);
+    expect(counter).toBe(11);
+  }));
 });
