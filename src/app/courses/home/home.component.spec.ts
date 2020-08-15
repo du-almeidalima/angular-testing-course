@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -100,6 +100,34 @@ describe('HomeComponent', () => {
     }, 1000);
   });
 
+  // Using fakeAsync to perform better async handling
+  it('should display advanced courses when tab clicked using fakeAsync', fakeAsync(() => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css('.mat-tab-label'));
+    tabs[1].triggerEventHandler('click', { button: 0 });
+    fixture.detectChanges();
+
+    flush();
+    const cardTitles = el.queryAll(By.css('.mat-tab-body-active .mat-card-title'));
+
+    expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+  }));
+
+  // Using async to perform better async handling
+  it('should display advanced courses when tab clicked using async', async(() => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css('.mat-tab-label'));
+    tabs[1].triggerEventHandler('click', { button: 0 });
+    fixture.detectChanges();
+
+    fixture.whenStable()
+      .then(() => {
+        const cardTitles = el.queryAll(By.css('.mat-tab-body-active .mat-card-title'));
+        expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+      });
+  }));
 });
-
-
